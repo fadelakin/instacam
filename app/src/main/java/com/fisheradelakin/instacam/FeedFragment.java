@@ -19,6 +19,9 @@ import java.util.List;
 public class FeedFragment extends Fragment {
 
 
+    private List<Photo> mPhotos;
+    private FeedAdapter mAdapter;
+
     public FeedFragment() {
         // Required empty public constructor
     }
@@ -31,13 +34,15 @@ public class FeedFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_feed, container, false);
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.feed_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager((getActivity())));
-        List<Photo> photos = new ArrayList<Photo>();
-        photos.add(new Photo());
-        photos.add(new Photo());
-        photos.add(new Photo());
-        photos.add(new Photo());
-        recyclerView.setAdapter(new FeedAdapter(getActivity(), photos));
+        mPhotos = new ArrayList<>();
+        mAdapter = new FeedAdapter(getActivity(), mPhotos);
+        recyclerView.setAdapter(mAdapter);
         return v;
+    }
+
+    public void addPhoto(Photo photo) {
+        mPhotos.add(0, photo);
+        mAdapter.notifyDataSetChanged();
     }
 
 

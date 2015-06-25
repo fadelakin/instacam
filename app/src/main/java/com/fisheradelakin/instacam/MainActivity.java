@@ -25,9 +25,9 @@ import it.neokree.materialtabs.MaterialTabListener;
 
 public class MainActivity extends AppCompatActivity implements MaterialTabListener {
 
-    private static final int CAMERA_REQUEST = 10;
     private static final String TAG = "MainActivity";
-    private Photo mPhoto;
+    private static final int NEW_PHOTO_REQUEST = 10;
+
     private FeedFragment mFeedFragment;
     private MaterialTabHost mTabBar;
     private ProfileFragment mProfileFragment;
@@ -41,13 +41,8 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
         cameraFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i  = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                mPhoto = new Photo();
-
-                i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhoto.getFile()));
-
-                startActivityForResult(i, CAMERA_REQUEST);
+                Intent i = new Intent(MainActivity.this, NewPhotoActivity.class);
+                startActivityForResult(i, NEW_PHOTO_REQUEST);
             }
         });
 
@@ -71,10 +66,9 @@ public class MainActivity extends AppCompatActivity implements MaterialTabListen
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setDataAndType(Uri.fromFile(mPhoto.getFile()), "image/jpeg");
-            startActivity(i);
+        if(requestCode == NEW_PHOTO_REQUEST && resultCode == RESULT_OK) {
+            Photo photo = (Photo) data.getSerializableExtra(NewPhotoActivity.PHOTO_EXTRA);
+            mFeedFragment.addPhoto(photo);
         }
     }
 
