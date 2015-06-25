@@ -15,37 +15,33 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-public class NewPhotoActivity extends AppCompatActivity {
+public class NewPhotoActivity extends AppCompatActivity implements NewPhotoFragment.Contract {
+
     private static final int CAMERA_REQUEST = 10;
     public static final String PHOTO_EXTRA = "PHOTO_EXTRA";
 
+    private static final String PHOTO_STATE_EXTRA = "PHOTO";
+
     private Photo mPhoto;
-    private ImageView mPreview;
+    private NewPhotoFragment mNewPhotoFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_photo);
 
-        final EditText caption = (EditText) findViewById(R.id.new_photo_caption);
+        mNewPhotoFragment = (NewPhotoFragment) getFragmentManager().findFragmentById(R.id.new_photo_frag_container);
+        if(mNewPhotoFragment == null) {
+            mNewPhotoFragment = new NewPhotoFragment();
 
-        mPreview = (ImageView) findViewById(R.id.photo_preview);
-        Button saveButton = (Button) findViewById(R.id.save_new_photo);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPhoto.setCaption(caption.getText().toString());
-                Intent i = new Intent();
-                i.putExtra(PHOTO_EXTRA, mPhoto);
-                setResult(RESULT_OK, i);
-                finish();
-            }
-        });
+            getFragmentManager().beginTransaction()
+                    .add(R.id.new_photo_frag_container, mNewPhotoFragment)
+                    .commit();
+        }
 
-        launchCamera();
     }
 
-    private void launchCamera() {
+    public void launchCamera() {
         Intent i  = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         mPhoto = new Photo();
@@ -56,10 +52,19 @@ public class NewPhotoActivity extends AppCompatActivity {
     }
 
     @Override
+    public void finishedPhoto(Photo photo) {
+        Intent i = new Intent();
+        i.putExtra(PHOTO_EXTRA, photo);
+        setResult(RESULT_OK, i);
+        finish();
+    }
+
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
             if(mPhoto.getFile() != null) {
-                Picasso.with(this).load(mPhoto.getFile()).into(mPreview);
+                mNewPhotoFragment.updatePhoto(mPhoto);
             }
         }
     }
