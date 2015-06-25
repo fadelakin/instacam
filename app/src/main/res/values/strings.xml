@@ -11,4 +11,5 @@
     <string name="save">Save</string>
 
     <string name="fb_app_id">923473941028318</string>
+    <string name="title_activity_login">LoginActivity</string>
 </resources>
