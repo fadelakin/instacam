@@ -13,6 +13,7 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 
@@ -64,9 +65,10 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onCompleted(Response response) {
                     if(session == Session.getActiveSession() && response.getGraphObject() != null) {
-                        Log.d(TAG, response.getGraphObject().toString());
-                        //Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                        //startActivity(i);
+                        GraphObject graphObject = response.getGraphObject();
+                        User.setCurrentUser(graphObject);
+                        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(i);
                     }
 
                     if(response.getError() != null) {
